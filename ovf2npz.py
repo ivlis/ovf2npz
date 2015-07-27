@@ -40,16 +40,31 @@ import sys
 from ovfFile import OvfFile
 from mumax3Data import Mumax3Data
 
+import argparse
+
+
 
 def main():
-    dir = '/home/ivlis/science/berry/rings-mx/data_new/profiles/ring2-5-low-power.out'
-    min_t = 3
-    max_t = 300
-    data = Mumax3Data.load_from_dir(dir, min_t, max_t)
-    data.save_to_file('test.npz')
-    #ovffile = OvfFile("m000020.ovf")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("data_directory", help="directory with mumax3 output files")
+    parser.add_argument("start_frame", help = "number of frame to start with")
+    parser.add_argument("stop_frame", help = "number of frame to stop")
+    args = parser.parse_args()
 
-    data2 = Mumax3Data.load_from_npz('test.npz')
+    dir = args.data_directory
+
+    if dir[-1] == '/':
+        dir = dir[:-1]
+
+
+    min_t = int(args.start_frame)
+    max_t = int(args.stop_frame)
+    data = Mumax3Data.load_from_dir(dir, min_t, max_t)
+
+    basename = os.path.basename(dir)[:-4] ## Dir name with .out removed
+
+    data.save_to_file('{basename}_{min_t}-{max_t}.npz'.format(basename = basename, min_t = min_t,
+        max_t = max_t))
 
 
 if __name__=='__main__':

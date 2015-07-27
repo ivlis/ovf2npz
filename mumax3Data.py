@@ -36,51 +36,6 @@ class Mumax3Data:
 
         return Mcyl
 
-    def _load_frame_from_csv(self, filename):
-
-        m_raw = np.genfromtxt(filename, dtype=float, delimiter=',')
-
-        a,b = m_raw.shape
-        assert(a == 3*b)
-
-        MX = np.reshape(m_raw[0:b, :], -1)
-        MY = np.reshape(m_raw[b:2*b, :], -1)
-        MZ = np.reshape(m_raw[2*b:3*b, :], -1)
-
-        if self.points is None:
-            # Here we do not know the number of non-zero elements
-            M = []
-            coordinates = []
-
-            x = np.arange(0,b)
-
-            X, Y = np.meshgrid(x,x, sparse=False)
-            X = np.reshape(X, -1)
-            Y = np.reshape(Y, -1)
-
-            for mx, my, mz, x, y in zip(MX, MY, MZ, X, Y):
-                abs_m = mx*mx + my*my + mz*mz
-                if abs(abs_m - 1) < self.m_eps:
-                    M.append(np.array([mx,my,mz]))
-                    coordinates.append(np.array([x,y]))
-
-            M = np.array(M)
-            coordinates = np.array(coordinates)
-
-            self.points, _ = M.shape
-            self.coordinates = coordinates
-
-        else:
-            M = np.zeros((self.points, 3))
-            n = 0
-            for mx, my, mz in zip(MX, MY, MZ):
-                abs_m = mx*mx + my*my + mz*mz
-                if abs(abs_m - 1) < self.m_eps:
-                    M[n,:] = np.array([mx, my, mz])
-                    n+=1
-
-        return M
-
     def _set_non_zero_coordinates(self, frame):
 
         xnodes = frame.headers['xnodes']

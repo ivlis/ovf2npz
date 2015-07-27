@@ -21,7 +21,7 @@ class Mumax3Data:
 
 
     def _do_cart2cyl_for_M(self):
-        Mcart = self.M
+        Mcart = self._M
 
         Mcyl = np.zeros_like(Mcart)
 
@@ -105,6 +105,16 @@ class Mumax3Data:
         self._coordinates = np.array(coordinates)
         self._points = self._coordinates.shape[0]
 
+    def _set_frame_metadata(self, frame):
+
+        self._xnodes = int(frame.headers['xnodes'])
+        self._ynodes = int(frame.headers['ynodes'])
+        self._znodes = int(frame.headers['znodes'])
+
+        self._xstepsize = int(frame.headers['xstepsize'])
+        self._ystepsize = int(frame.headers['ystepsize'])
+        self._zstepsize = int(frame.headers['zstepsize'])
+
 
     def _load_frame_from_ovf(self, frame):
 
@@ -130,7 +140,9 @@ class Mumax3Data:
 
         self._set_non_zero_coordinates(frame)
 
-        znodes = int(frame.headers['znodes'])
+        self._set_frame_metadata(frame)
+
+        znodes = self._znodes
 
         M = np.zeros((n_max-n_min, znodes, self._points, 3), dtype=float)
         T = np.zeros(n_max-n_min, dtype=float)
@@ -145,14 +157,15 @@ class Mumax3Data:
             if n%50 == 0:
                 print('File {filename} loaded'.format(filename=filename))
 
-        self.M = M
-        self.ticks = n_max - n_min
+        self._M = M
+        self._ticks = n_max - n_min
+        self._T = T
 
     @classmethod
     def load_from_dir(Cls, dir, n_min, n_max):
         data = Cls()
         data._load_all_frames(dir, n_min, n_max)
-        data.Mcyl = data._do_cart2cyl_for_M()
+        data._Mcyl = data._do_cart2cyl_for_M()
         return data
 
     @classmethod
@@ -167,8 +180,17 @@ class Mumax3Data:
         return data
 
     def save_to_file(self,filename):
-        np.savez(filename, M = self.M, ticks = self.ticks, points = self.points,
-                coordinates = self.coordinates, Mcyl = self.Mcyl)
+        np.savez(filename, 
+                M = self._M, 
+                T = self._T, 
+                coordinates = self._coordinates,
+                xnodes = self._xnodes,
+                ynodes = self._ynodes,
+                znodes = self._znodes,
+                xstepsize = self._xstepsize,
+                ystepsize = self._ystepsize,
+                zstepsize = self._zstepsize,
+                Mcyl = self._Mcyl)
 
     @property
     def M_avg(self):

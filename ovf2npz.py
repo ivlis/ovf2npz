@@ -65,9 +65,6 @@ class OvfFile:
         else:
             raise Exception("Unsupported format")
 
-    
-
-
     def __parse_file(self,filename):
         with open(filename, 'rb') as f:
             headers = {}
@@ -97,7 +94,16 @@ class OvfFile:
                        for i in range(int(headers["xnodes"])):
                            outArray[i,j,k,:] = dc.unpack(f.read(chunksize))
 
-            print(outArray[:,75,1])
+        self._array = outArray
+        self._headers = headers
+
+    @property
+    def array(self):
+        return self._array
+
+    @property
+    def headers(self):
+        return self._headers
 
     def __init__(self, filename):
         self.__parse_file(filename)

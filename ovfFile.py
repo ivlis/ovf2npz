@@ -91,10 +91,15 @@ class OvfFile:
 
         self._array = outArray
         self._headers = headers
+        self._time = time
 
     @property
     def array(self):
         return self._array
+
+    @property
+    def time(self):
+        return self._time
 
     @property
     def headers(self):

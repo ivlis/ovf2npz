@@ -38,10 +38,15 @@ import os
 import sys
 
 from ovfFile import OvfFile
+from mumax3Data import Mumax3Data
 
 
 def main():
-    ovffile = OvfFile("m000020.ovf")
+    dir = '/home/ivlis/science/berry/rings-mx/data_new/profiles/ring2-0-low-power.out'
+    min_t = 3
+    max_t = 300
+    data = Mumax3Data.load_from_dir(dir, min_t, max_t)
+    #ovffile = OvfFile("m000020.ovf")
 
 
 if __name__=='__main__':

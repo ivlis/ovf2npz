@@ -7,17 +7,18 @@ import sys
 import numpy as np
 import numpy.fft as fft
 
+from ovfFile import OvfFile
+
 
 class Mumax3Data:
 
     m_eps = 1e-6
 
-    points = None  #Number of points in one frame
-    ticks = None   #Number of time frames
+    _points = None  #Number of points in one frame
+    _coordinates = None
 
     _M_avg = None
 
-    dt = 0.2e-9    #Time step  (this should be loaded)
 
     def _do_cart2cyl_for_M(self):
         Mcart = self.M
@@ -80,18 +81,67 @@ class Mumax3Data:
 
         return M
 
-    def _load_all_frames(self, dir, n_min, n_max):
+    def _set_non_zero_coordinates(self, frame):
 
-        filename = os.path.join(dir, 'm{:06d}.csv'.format(n_min))
-        Mt = self._load_frame_from_csv(filename)
+        xnodes = frame.headers['xnodes']
+        ynodes = frame.headers['ynodes']
 
-        M = np.zeros((n_max-n_min, self.points, 3))
-        M[0,:,:] = Mt
+        x = np.arange(0,xnodes, dtype=int)
+        y = np.arange(0,ynodes, dtype=int)
 
-        for n in range(n_min+1, n_max):
-            filename = os.path.join(dir, 'm{:06d}.csv'.format(n))
-            Mt = self._load_frame_from_csv(filename)
-            M[n - n_min, :, :] = Mt
+        X, Y = np.meshgrid(x, y, sparse=False)
+        X = np.reshape(X, -1)
+        Y = np.reshape(Y, -1)
+
+        layer = frame.array[:,:,0].reshape(-1,3)
+
+        coordinates = []
+
+        for m, x, y in zip(layer, X, Y):
+            abs_m = np.sqrt(m.dot(m))
+            if np.abs(abs_m - 1) < self.m_eps:
+                coordinates.append(np.array([x,y]))
+
+        self._coordinates = np.array(coordinates)
+        self._points = self._coordinates.shape[0]
+
+
+    def _load_frame_from_ovf(self, frame):
+
+        if self._coordinates is None:
+            self._set_non_zero_coordinates(frame)
+
+        znodes = int(frame.headers['znodes'])
+
+        M = np.zeros((znodes, self._points, 3), dtype=float)
+        for z in range(0, znodes):
+            layer = frame.array[:,:,z]
+            for n, m  in zip(self._coordinates, M[z]):
+                m[...] = layer[n[0],n[1]]
+
+        time = frame.time
+
+        return (M, time)
+
+    def _load_all_frames(self, dir, n_min, n_max, format='ovf'):
+
+        filename = os.path.join(dir, 'm{:06d}.ovf'.format(n_min))
+        frame = OvfFile(filename)
+
+        self._set_non_zero_coordinates(frame)
+
+        znodes = int(frame.headers['znodes'])
+
+        M = np.zeros((n_max-n_min, znodes, self._points, 3), dtype=float)
+        T = np.zeros(n_max-n_min, dtype=float)
+        print(M.shape)
+
+        for n in range(n_min, n_max):
+            filename = os.path.join(dir, 'm{:06d}.ovf'.format(n))
+            frame = OvfFile(filename)
+            Mt, t = self._load_frame_from_ovf(frame)
+            M[n - n_min] = Mt
+            T[n - n_min] = t
             if n%50 == 0:
                 print('File {filename} loaded'.format(filename=filename))
 
@@ -100,7 +150,7 @@ class Mumax3Data:
 
     @classmethod
     def load_from_dir(Cls, dir, n_min, n_max):
-        data = MumaxData()
+        data = Cls()
         data._load_all_frames(dir, n_min, n_max)
         data.Mcyl = data._do_cart2cyl_for_M()
         return data

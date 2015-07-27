@@ -172,11 +172,19 @@ class Mumax3Data:
     def load_from_npz(Cls, filename):
         data = Cls()
         saved_data = np.load(filename)
-        data.M = saved_data['M']
-        data.ticks = int(saved_data['ticks'])
-        data.points = int(saved_data['points'])
-        data.coordinates = saved_data['coordinates']
-        data.Mcyl = saved_data['Mcyl']
+        data._M = saved_data['M']
+        data._T = saved_data['T']
+        data._coordinates = saved_data['coordinates']
+
+        data.xnodes = int(saved_data['xnodes'])
+        data.ynodes = int(saved_data['ynodes'])
+        data.znodes = int(saved_data['znodes'])
+
+        data.xstepsize = int(saved_data['xstepsize'])
+        data.ystepsize = int(saved_data['ystepsize'])
+        data.zstepsize = int(saved_data['zstepsize'])
+
+        data._Mcyl = saved_data['Mcyl']
         return data
 
     def save_to_file(self,filename):

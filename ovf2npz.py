@@ -42,11 +42,14 @@ from mumax3Data import Mumax3Data
 
 
 def main():
-    dir = '/home/ivlis/science/berry/rings-mx/data_new/profiles/ring2-0-low-power.out'
+    dir = '/home/ivlis/science/berry/rings-mx/data_new/profiles/ring2-5-low-power.out'
     min_t = 3
     max_t = 300
     data = Mumax3Data.load_from_dir(dir, min_t, max_t)
+    data.save_to_file('test.npz')
     #ovffile = OvfFile("m000020.ovf")
+
+    data2 = Mumax3Data.load_from_npz('test.npz')
 
 
 if __name__=='__main__':

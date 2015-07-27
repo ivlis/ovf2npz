@@ -59,9 +59,9 @@ class OvfFile:
         test_value = f.read(4)
 
         if struct.unpack('<f', test_value)[0] == __TEST_VALUE_4:
-            return (struct.Struct('<f'), 4)
+            return (struct.Struct('<fff'), 4*3)
         elif  struct.unpack('>f', test_value)[0] == __TEST_VALUE_4:
-            return (struct.Struct('>f'), 4)
+            return (struct.Struct('>fff'), 4*3)
         else:
             raise Exception("Unsupported format")
 
@@ -91,11 +91,11 @@ class OvfFile:
                                  int(headers["ynodes"]),
                                  int(headers["znodes"]),
                                  3))
+
             for k in range(int(headers["znodes"])):
                    for j in range(int(headers["ynodes"])):
                        for i in range(int(headers["xnodes"])):
-                           for coord in range(3): 
-                               outArray[i,j,k,coord] = dc.unpack(f.read(chunksize))[0]
+                           outArray[i,j,k,:] = dc.unpack(f.read(chunksize))
 
             print(outArray[:,75,1])
 

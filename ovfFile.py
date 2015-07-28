@@ -39,7 +39,7 @@ import numpy as np
 class OvfFile:
 
     @staticmethod
-    def __create_decoder(f):
+    def __create_decoder(f, xnodes):
         """Creates appropriate decoding object
 
         :f: file object stopped right before data
@@ -53,12 +53,12 @@ class OvfFile:
 
         test_value = f.read(4)
 
-        pattern = 'fff'*100
+        pattern = 'fff'*xnodes
 
         if struct.unpack('<f', test_value)[0] == __TEST_VALUE_4:
-            return (struct.Struct('<'+pattern), 4*3*100)
+            return (struct.Struct('<'+pattern), 4*3*xnodes)
         elif  struct.unpack('>f', test_value)[0] == __TEST_VALUE_4:
-            return (struct.Struct('>'+pattern), 4*3*100)
+            return (struct.Struct('>'+pattern), 4*3*xnodes)
         else:
             raise Exception("Unsupported format")
 
@@ -78,7 +78,7 @@ class OvfFile:
                 if "Total simulation time" in a:
                     time = float(a.split(":")[-1].strip().split()[0].strip())
 
-            dc, chunksize = self.__create_decoder(f)
+            dc, chunksize = self.__create_decoder(f, int(headers['xnodes']))
 
             #Initialize array to be populated
             outArray = np.zeros((int(headers["xnodes"]),

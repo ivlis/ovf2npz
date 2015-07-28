@@ -20,22 +20,6 @@ class Mumax3Data:
     _M_avg = None
 
 
-    def _do_cart2cyl_for_M(self):
-        Mcart = self._M
-
-        Mcyl = np.zeros_like(Mcart)
-
-        Mcyl[:,:,2] = Mcart[:,:,2]
-
-        for Mcart_f, Mcyl_f in zip(Mcart, Mcyl):
-            for mcart, mcyl in zip(Mcart_f, Mcyl_f):
-                #print("cart:", mcart)
-                mcyl[0] = np.sqrt(mcart[0]**2 + mcart[1]**2)
-                mcyl[1] = np.arctan2(mcart[0], mcart[1])
-                #print("cyl", mcyl)
-
-        return Mcyl
-
     def _set_non_zero_coordinates(self, frame):
 
         xnodes = frame.headers['xnodes']
@@ -120,7 +104,6 @@ class Mumax3Data:
     def load_from_dir(Cls, dir, n_min, n_max):
         data = Cls()
         data._load_all_frames(dir, n_min, n_max)
-        data._Mcyl = data._do_cart2cyl_for_M()
         return data
 
     @classmethod
@@ -139,7 +122,6 @@ class Mumax3Data:
         data.ystepsize = int(saved_data['ystepsize'])
         data.zstepsize = int(saved_data['zstepsize'])
 
-        data._Mcyl = saved_data['Mcyl']
         return data
 
     def save_to_file(self,filename):
@@ -152,8 +134,8 @@ class Mumax3Data:
                 znodes = self._znodes,
                 xstepsize = self._xstepsize,
                 ystepsize = self._ystepsize,
-                zstepsize = self._zstepsize,
-                Mcyl = self._Mcyl)
+                zstepsize = self._zstepsize
+                )
 
     @property
     def M_avg(self):

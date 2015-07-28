@@ -62,7 +62,7 @@ class OvfFile:
         else:
             raise Exception("Unsupported format")
 
-    def __parse_file(self,filename):
+    def __parse_file(self, filename, cached_dc_and_chunksize = None):
         with open(filename, 'rb') as f:
             headers = {}
             capture_keys = ("xmin", "ymin", "zmin", "xmin", "ymin", "zmin", "xstepsize",
@@ -84,7 +84,10 @@ class OvfFile:
 
             array_size = znodes*ynodes*xnodes
 
-            dc, chunksize = self.__create_decoder(f, array_size)
+            if cached_dc_and_chunksize is None:
+                dc, chunksize = self.__create_decoder(f, array_size)
+            else:
+                dc, chunksize = cached_dc_and_chunksize
 
             flat_array = np.array(dc.unpack(f.read(chunksize))).reshape((znodes, ynodes, xnodes, 3))
             outArray = np.swapaxes(flat_array, 0,2)
@@ -93,6 +96,8 @@ class OvfFile:
         self._array = outArray
         self._headers = headers
         self._time = time
+
+        self._dc_and_chunksize = (dc, chunksize)
 
     @property
     def array(self):
@@ -106,6 +111,10 @@ class OvfFile:
     def headers(self):
         return self._headers
 
-    def __init__(self, filename):
-        self.__parse_file(filename)
+    @property
+    def dc_and_chunksize(self):
+        return self._dc_and_chunksize
+
+    def __init__(self, filename, cached_dc_and_chunksize = None):
+        self.__parse_file(filename, cached_dc_and_chunksize)
 

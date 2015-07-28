@@ -77,6 +77,8 @@ class Mumax3Data:
         filename = os.path.join(dir, 'm{:06d}.ovf'.format(n_min))
         frame = OvfFile(filename)
 
+        dc_and_chunksize = frame.dc_and_chunksize
+
         self._set_non_zero_coordinates(frame)
 
         self._set_frame_metadata(frame)
@@ -89,7 +91,7 @@ class Mumax3Data:
 
         for n in range(n_min, n_max):
             filename = os.path.join(dir, 'm{:06d}.ovf'.format(n))
-            frame = OvfFile(filename)
+            frame = OvfFile(filename, dc_and_chunksize)
             Mt, t = self._load_frame_from_ovf(frame)
             M[n - n_min] = Mt
             T[n - n_min] = t

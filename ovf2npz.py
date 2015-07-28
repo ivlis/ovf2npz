@@ -45,6 +45,12 @@ import argparse
 
 
 def main():
+
+    # This should be reformulated as a test
+    #ovffile = OvfFile("m000020.ovf")
+    #print(ovffile.array[:,0,0])
+    #exit(-1)
+
     parser = argparse.ArgumentParser()
     parser.add_argument("data_directory", help="directory with mumax3 output files")
     parser.add_argument("start_frame", help = "number of frame to start with")

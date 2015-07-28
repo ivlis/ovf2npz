@@ -39,7 +39,7 @@ import numpy as np
 class OvfFile:
 
     @staticmethod
-    def __create_decoder(f, xnodes):
+    def __create_decoder(f, array_size):
         """Creates appropriate decoding object
 
         :f: file object stopped right before data
@@ -53,12 +53,12 @@ class OvfFile:
 
         test_value = f.read(4)
 
-        pattern = 'fff'*xnodes
+        pattern = 'fff'*array_size
 
         if struct.unpack('<f', test_value)[0] == __TEST_VALUE_4:
-            return (struct.Struct('<'+pattern), 4*3*xnodes)
+            return (struct.Struct('<'+pattern), 4*3*array_size)
         elif  struct.unpack('>f', test_value)[0] == __TEST_VALUE_4:
-            return (struct.Struct('>'+pattern), 4*3*xnodes)
+            return (struct.Struct('>'+pattern), 4*3*array_size)
         else:
             raise Exception("Unsupported format")
 
@@ -78,18 +78,17 @@ class OvfFile:
                 if "Total simulation time" in a:
                     time = float(a.split(":")[-1].strip().split()[0].strip())
 
-            dc, chunksize = self.__create_decoder(f, int(headers['xnodes']))
+            znodes = int(headers['znodes'])
+            ynodes = int(headers['ynodes'])
+            xnodes = int(headers['xnodes'])
 
-            #Initialize array to be populated
-            outArray = np.zeros((int(headers["xnodes"]),
-                                 int(headers["ynodes"]),
-                                 int(headers["znodes"]),
-                                 3))
+            array_size = znodes*ynodes*xnodes
 
-            for k in range(int(headers["znodes"])):
-                   for j in range(int(headers["ynodes"])):
-                       xarray = np.array(dc.unpack(f.read(chunksize)))
-                       outArray[:,j,k,:] = np.reshape(xarray, (-1,3))
+            dc, chunksize = self.__create_decoder(f, array_size)
+
+            flat_array = np.array(dc.unpack(f.read(chunksize))).reshape((znodes, ynodes, xnodes, 3))
+            outArray = np.swapaxes(flat_array, 0,2)
+
 
         self._array = outArray
         self._headers = headers

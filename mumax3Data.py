@@ -139,9 +139,25 @@ class Mumax3Data:
                 zstepsize = self._zstepsize
                 )
 
+    def M_avg(self, z=0):
+        zslice = self._M[:,z,:,:]
+        return np.mean(zslice, axis=1)
+        #return self._M_avg
+
     @property
-    def M_avg(self):
-        if self._M_avg is None:
-            self._M_avg = np.sum(self.M, axis=1)/self.points
-        return self._M_avg
+    def M(self):
+        return self._M
+
+    @property
+    def T(self):
+        return self._T
+
+    @property
+    def coordinates(self):
+        return self._coordinates
+
+    @property
+    def ticks(self):
+        ticks, _z, _xy, _v = self._M.shape
+        return ticks
 

@@ -71,6 +71,10 @@ def _write_to_file(f, array):
     flattend_array = np.ravel(array,order='C')
     f.write(struct.pack("<"+"fff"*x*y,*flattend_array))
 
+def nparray2ovf(filename, array):
+    with open(filename, 'wb') as f:
+        _write_to_file(f, array)
+
 def main():
 
     parser = argparse.ArgumentParser()
@@ -79,9 +83,9 @@ def main():
     args = parser.parse_args()
 
     array = np.load(args.npz)
+    filename = args.ovf
+    nparray2ovf(filename, array)
 
-    with open(args.ovf, 'wb') as f:
-        _write_to_file(f, array)
 
 if __name__=='__main__':
     main()

@@ -57,25 +57,10 @@ def _write_to_file(f, array):
 # Title: m
 # meshtype: rectangular
 # meshunit: m
-# xmin: 0
-# ymin: 0
-# zmin: 0
-# xmax: 1.28e-06
-# ymax: 6.4e-07
-# zmax: 5e-09
 # valuedim: 3
-# valuelabels: m_x m_y m_z
-# valueunits: 1 1 1
-# Desc: Total simulation time:  0  s
-# xbase: 2.5e-09
-# ybase: 2.5e-09
-# zbase: 2.5e-09
 # xnodes: {xnodes}
 # ynodes: {ynodes}
 # znodes: 1
-# xstepsize: 5e-09
-# ystepsize: 5e-09
-# zstepsize: 5e-09
 # End: Header
 # Begin: Data Binary 4
 '''.format(xnodes = x, ynodes = y)

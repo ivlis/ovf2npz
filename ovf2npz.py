@@ -48,7 +48,7 @@ def main():
 
     # This should be reformulated as a test
     ovffile = OvfFile("test_m.ovf")
-    print(ovffile.array[:,0,0])
+    print(ovffile.array[:,:,0])
     exit(-1)
 
     parser = argparse.ArgumentParser()

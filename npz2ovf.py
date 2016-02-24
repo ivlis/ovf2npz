@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
 """
 ovf2npz.py
 Copyright (C) 2015  Ivan Lisenkov
@@ -41,37 +40,53 @@ from ovfFile import OvfFile
 from mumax3Data import Mumax3Data
 
 import argparse
+import struct
 
 
+def _write_to_file(f):
+
+    __TEST_VALUE_4 = 1234567.0
+
+    metadata = '''# OOMMF OVF 2.0
+# Segment count: 1
+# Begin: Segment
+# Begin: Header
+# Title: m
+# meshtype: rectangular
+# meshunit: m
+# xmin: 0
+# ymin: 0
+# zmin: 0
+# xmax: 1.28e-06
+# ymax: 6.4e-07
+# zmax: 5e-09
+# valuedim: 3
+# valuelabels: m_x m_y m_z
+# valueunits: 1 1 1
+# Desc: Total simulation time:  0  s
+# xbase: 2.5e-09
+# ybase: 2.5e-09
+# zbase: 2.5e-09
+# xnodes: 256
+# ynodes: 128
+# znodes: 1
+# xstepsize: 5e-09
+# ystepsize: 5e-09
+# zstepsize: 5e-09
+# End: Header
+# Begin: Data Binary 4
+'''
+
+    f.write(metadata.encode('ascii'))
+
+    f.write(struct.pack("<f",__TEST_VALUE_4))
+    for i in range(1*256*128):
+        f.write(struct.pack("<fff",1.0,0.0,0.0))
 
 def main():
-
-    # This should be reformulated as a test
-    ovffile = OvfFile("test_m.ovf")
-    print(ovffile.array[:,0,0])
-    exit(-1)
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("data_directory", help="directory with mumax3 output files")
-    parser.add_argument("start_frame", help = "number of frame to start with")
-    parser.add_argument("stop_frame", help = "number of frame to stop")
-    args = parser.parse_args()
-
-    dir = args.data_directory
-
-    if dir[-1] == '/':
-        dir = dir[:-1]
-
-
-    min_t = int(args.start_frame)
-    max_t = int(args.stop_frame)
-    data = Mumax3Data.load_from_dir(dir, min_t, max_t)
-
-    basename = os.path.basename(dir)[:-4] ## Dir name with .out removed
-
-    data.save_to_file('{basename}_{min_t}-{max_t}.npz'.format(basename = basename, min_t = min_t,
-        max_t = max_t))
-
+    filename = "test_m.ovf"
+    with open(filename, 'wb') as f:
+        _write_to_file(f)
 
 if __name__=='__main__':
     main()

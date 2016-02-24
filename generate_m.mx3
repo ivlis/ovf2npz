@@ -1,0 +1,9 @@
+setgridsize(256, 128, 1)
+setcellsize(5e-9, 5e-9, 5e-9)
+
+m = Uniform(1, 0, 0)  // no need to normalize length
+saveas(m, "uniform")
+
+m = Vortex(1, -1)     // circulation, polarization
+saveas(m, "vortex")
+

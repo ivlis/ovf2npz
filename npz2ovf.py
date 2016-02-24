@@ -33,12 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 
 
-import os
-import sys
 import numpy as np
-
-from ovfFile import OvfFile
-from mumax3Data import Mumax3Data
 
 import argparse
 import struct

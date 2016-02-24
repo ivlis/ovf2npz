@@ -68,9 +68,8 @@ def _write_to_file(f, array):
     f.write(metadata.encode('ascii'))
 
     f.write(struct.pack("<f",__TEST_VALUE_4))
-    for i in range(x):
-        for j in range(y):
-            f.write(struct.pack("<fff",*array[i,j,:]))
+    flattend_array = np.ravel(array,order='C')
+    f.write(struct.pack("<"+"fff"*x*y,*flattend_array))
 
 def main():
 

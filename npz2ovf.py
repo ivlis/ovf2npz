@@ -70,18 +70,18 @@ def _write_to_file(f, array):
     f.write(struct.pack("<f",__TEST_VALUE_4))
     for i in range(x):
         for j in range(y):
-            f.write(struct.pack("<fff",array[i,j,0],array[i,j,1],array[i,j,2]))
+            f.write(struct.pack("<fff",*array[i,j,:]))
 
 def main():
-    filename_out = "test_m.ovf"
-    filename_in = ""
 
-    array = np.zeros((10,20,3), dtype=float)
-    array[:,:,0] =0.1
-    array[:,:,1] =1.0
-    array[:,:,2] =0.88
+    parser = argparse.ArgumentParser()
+    parser.add_argument("npz", help="npz filename")
+    parser.add_argument("ovf", help = "ovf filename")
+    args = parser.parse_args()
 
-    with open(filename_out, 'wb') as f:
+    array = np.load(args.npz)
+
+    with open(args.ovf, 'wb') as f:
         _write_to_file(f, array)
 
 if __name__=='__main__':

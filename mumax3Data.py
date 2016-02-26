@@ -7,7 +7,7 @@ import sys
 import numpy as np
 import numpy.fft as fft
 
-from ovfFile import OvfFile
+from .ovfFile import OvfFile
 
 
 class Mumax3Data:

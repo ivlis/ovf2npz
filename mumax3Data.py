@@ -28,7 +28,7 @@ class Mumax3Data:
         x = np.arange(0,xnodes, dtype=int)
         y = np.arange(0,ynodes, dtype=int)
 
-        X, Y = np.meshgrid(x, y, sparse=False)
+        X, Y = np.meshgrid(x, y)
         X = np.reshape(X, -1)
         Y = np.reshape(Y, -1)
 

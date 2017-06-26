@@ -47,9 +47,11 @@ import argparse
 def main():
 
     # This should be reformulated as a test
-    ovffile = OvfFile("test_m.ovf")
-    print(ovffile.array[:,:,0])
-    exit(-1)
+    # ovffile = OvfFile("./data/m000000.ovf")
+    # ovffile = OvfFile("./output/b_exc_001.ovf")
+    # print(ovffile.array.shape)
+    # print(ovffile.array[:,:,0,0])
+    # exit(-1)
 
     parser = argparse.ArgumentParser()
     parser.add_argument("data_directory", help="directory with mumax3 output files")
@@ -75,4 +77,3 @@ def main():
 
 if __name__=='__main__':
     main()
-

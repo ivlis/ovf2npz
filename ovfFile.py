@@ -91,12 +91,12 @@ class OvfFile:
 
             flat_array = np.array(dc.unpack(f.read(chunksize))).reshape((znodes, ynodes, xnodes, 3))
             outArray = np.swapaxes(flat_array, 0,2)
-            outArray = np.swapaxes(outArray, 0,1)
+            # outArray = np.swapaxes(outArray, 0,1)
 
 
         self._array = outArray
         self._headers = headers
-        # self._time = time
+        self._time = time
 
         self._dc_and_chunksize = (dc, chunksize)
 

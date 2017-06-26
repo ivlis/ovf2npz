@@ -63,6 +63,7 @@ def _write_to_file(f, array):
     f.write(metadata.encode('ascii'))
 
     f.write(struct.pack("<f",__TEST_VALUE_4))
+    array = np.swapaxes(array,0,1)
     flattend_array = np.ravel(array,order='C')
     f.write(struct.pack("<"+"fff"*x*y,*flattend_array))
 
@@ -84,4 +85,3 @@ def main():
 
 if __name__=='__main__':
     main()
-

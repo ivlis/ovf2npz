@@ -72,40 +72,56 @@ class Mumax3Data:
 
         return (M, time)
 
-    def _load_all_frames(self, dir, n_min, n_max, format='ovf'):
+    def _load_all_frames(self, dir, n_min, n_max, xy_flatten, format='ovf'):
 
         filename = os.path.join(dir, 'm{0:06d}.ovf'.format(n_min))
         frame = OvfFile(filename)
 
         dc_and_chunksize = frame.dc_and_chunksize
-
-        self._set_non_zero_coordinates(frame)
-
         self._set_frame_metadata(frame)
-
         znodes = self._znodes
+        xnodes = self._xnodes
+        ynodes = self._ynodes
 
-        M = np.zeros((n_max-n_min, znodes, self._points, 3), dtype=float)
         T = np.zeros(n_max-n_min, dtype=float)
-        print(M.shape)
 
-        for n in range(n_min, n_max):
-            filename = os.path.join(dir, 'm{0:06d}.ovf'.format(n))
-            frame = OvfFile(filename, dc_and_chunksize)
-            Mt, t = self._load_frame_from_ovf(frame)
-            M[n - n_min] = Mt
-            T[n - n_min] = t
-            if n%50 == 0:
-                print('File {filename} loaded'.format(filename=filename))
+        if xy_flatten:
+            self._set_non_zero_coordinates(frame)
+            M = np.zeros((n_max-n_min, znodes, self._points, 3), dtype=float)
+            print(M.shape)
+
+            for n in range(n_min, n_max):
+                filename = os.path.join(dir, 'm{0:06d}.ovf'.format(n))
+                frame = OvfFile(filename, dc_and_chunksize)
+                Mt, t = self._load_frame_from_ovf(frame)
+                M[n - n_min] = Mt
+                T[n - n_min] = t
+                if n%50 == 0:
+                    print('File {filename} loaded'.format(filename=filename))
+
+        else:
+            M = np.zeros((n_max-n_min, xnodes, ynodes, znodes, 3), dtype=float)
+            print(M.shape)
+
+            for n in range(n_min, n_max):
+                filename = os.path.join(dir, 'm{0:06d}.ovf'.format(n))
+                frame = OvfFile(filename, dc_and_chunksize)
+                # Mt, t = self._load_frame_from_ovf(frame, xy_flatten)
+                M[n - n_min] = frame.array
+                T[n - n_min] = frame.time
+                if n%50 == 0:
+                    print('File {filename} loaded'.format(filename=filename))
+
+
 
         self._M = M
         self._ticks = n_max - n_min
         self._T = T
 
     @classmethod
-    def load_from_dir(Cls, dir, n_min, n_max):
+    def load_from_dir(Cls, dir, n_min, n_max, xy_flatten=True):
         data = Cls()
-        data._load_all_frames(dir, n_min, n_max)
+        data._load_all_frames(dir, n_min, n_max, xy_flatten)
         return data
 
     @classmethod
@@ -127,9 +143,9 @@ class Mumax3Data:
         return data
 
     def save_to_file(self,filename):
-        np.savez(filename, 
-                M = self._M, 
-                T = self._T, 
+        np.savez(filename,
+                M = self._M,
+                T = self._T,
                 coordinates = self._coordinates,
                 xnodes = self._xnodes,
                 ynodes = self._ynodes,
@@ -160,4 +176,3 @@ class Mumax3Data:
     def ticks(self):
         ticks, _z, _xy, _v = self._M.shape
         return ticks
-

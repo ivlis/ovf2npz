@@ -57,7 +57,15 @@ def main():
     parser.add_argument("data_directory", help="directory with mumax3 output files")
     parser.add_argument("start_frame", help = "number of frame to start with")
     parser.add_argument("stop_frame", help = "number of frame to stop")
+    parser.add_argument("xy_flatten")
     args = parser.parse_args()
+
+    if args.xy_flatten=="True":
+        xy_flatten = True
+    elif args.xy_flatten=="False":
+        xy_flatten= False
+    else:
+        print("The xy_flatten argument is set incorrectly, must be True or False")
 
     dir = args.data_directory
 
@@ -67,7 +75,7 @@ def main():
 
     min_t = int(args.start_frame)
     max_t = int(args.stop_frame)
-    data = Mumax3Data.load_from_dir(dir, min_t, max_t)
+    data = Mumax3Data.load_from_dir(dir, min_t, max_t, xy_flatten=xy_flatten)
 
     basename = os.path.basename(dir)[:-4] ## Dir name with .out removed
 

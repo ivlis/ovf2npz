@@ -7,7 +7,7 @@ import sys
 import numpy as np
 import numpy.fft as fft
 
-from .ovfFile import OvfFile
+from ovfFile import OvfFile
 
 
 class Mumax3Data:
@@ -127,9 +127,9 @@ class Mumax3Data:
         return data
 
     def save_to_file(self,filename):
-        np.savez(filename, 
-                M = self._M, 
-                T = self._T, 
+        np.savez(filename,
+                M = self._M,
+                T = self._T,
                 coordinates = self._coordinates,
                 xnodes = self._xnodes,
                 ynodes = self._ynodes,
@@ -160,4 +160,3 @@ class Mumax3Data:
     def ticks(self):
         ticks, _z, _xy, _v = self._M.shape
         return ticks
-

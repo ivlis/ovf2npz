@@ -117,4 +117,3 @@ class OvfFile:
 
     def __init__(self, filename, cached_dc_and_chunksize = None):
         self.__parse_file(filename, cached_dc_and_chunksize)
-

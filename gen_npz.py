@@ -5,15 +5,19 @@ import numpy as np
 
 def main():
 
-    array = np.zeros((10,20,3), dtype=float)
-    array[:,:,0] =0.1
-    array[:,:,1] =1.0
-    array[:,:,2] =0.88
-    array[9,19,2] = 102
+    array = np.zeros((6,4,3,3), dtype=float)
+    array[:,:,0,0] = 1
+    array[:,:,0,1] = 2
+    array[:,:,0,2] = 3
 
-    np.save("test_m.npy", array)
+    array[:,:,1,0] = 4
+    array[:,:,1,1] = 5
+    array[:,:,1,2] = 6
+
+    array[0,2,2,2] = 10
+
+    np.save("test_m3d.npy", array)
 
 
 if __name__=='__main__':
     main()
-

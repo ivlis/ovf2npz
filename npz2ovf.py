@@ -43,7 +43,8 @@ def _write_to_file(f, array):
 
     __TEST_VALUE_4 = 1234567.0
 
-    x,y,_ = array.shape
+    x, y, z, _ = array.shape
+    print(array.shape)
 
     metadata = '''# OOMMF OVF 2.0
 # Segment count: 1
@@ -55,26 +56,30 @@ def _write_to_file(f, array):
 # valuedim: 3
 # xnodes: {xnodes}
 # ynodes: {ynodes}
-# znodes: 1
+# znodes: {znodes}
 # End: Header
 # Begin: Data Binary 4
-'''.format(xnodes = x, ynodes = y)
+'''.format(xnodes=x, ynodes=y, znodes=z)
 
     f.write(metadata.encode('ascii'))
 
-    f.write(struct.pack("<f",__TEST_VALUE_4))
-    flattend_array = np.ravel(array,order='C')
-    f.write(struct.pack("<"+"fff"*x*y,*flattend_array))
+    f.write(struct.pack("<f", __TEST_VALUE_4))
+    array = np.swapaxes(array, 0, 1)
+    for zz in range(0, z):
+        flattend_array = np.ravel(array[:, :, zz, :], order='C')
+        f.write(struct.pack("<" + "fff" * x * y, *flattend_array))
+
 
 def nparray2ovf(filename, array):
     with open(filename, 'wb') as f:
         _write_to_file(f, array)
 
+
 def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("npz", help="npz filename")
-    parser.add_argument("ovf", help = "ovf filename")
+    parser.add_argument("ovf", help="ovf filename")
     args = parser.parse_args()
 
     array = np.load(args.npz)
@@ -82,6 +87,5 @@ def main():
     nparray2ovf(filename, array)
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     main()
-
